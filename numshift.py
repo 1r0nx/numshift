@@ -67,6 +67,7 @@ def main():
                 print(f"{in_name}({num}) → {out_name}: {result}")
                 result_list.append(result)
 
+        print("\n")
         if result_list:
             print(f"List separed by spaces: {" ".join(result_list)}")
             print(f"List separed by commas: {", ".join(result_list)}")
