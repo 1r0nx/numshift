@@ -60,13 +60,14 @@ numshift
 Output:
 
 ```bash
+❯ numshift
 Choose an input base
 1. bin
 2. oct
 3. dec
 4. hex
 q. quit
-base: 3
+base: 2
 
 
 Choose an output base
@@ -77,15 +78,18 @@ Choose an output base
 q. quit
 base: 1
 
-Enter number(s) separated by spaces or commas: 12 23 34 45
+oct > bin
+Enter oct number(s) separated by spaces or commas: 12 34 09 34
 
 ===== Conversion Results =====
-dec(12) → bin: 1100
-dec(23) → bin: 10111
-dec(34) → bin: 100010
-dec(45) → bin: 101101
-List separed by spaces: 1100 10111 100010 101101
-List separed by commas: 1100, 10111, 100010, 101101
+oct(12) → bin: 1010
+oct(34) → bin: 11100
+09: is not a oct number
+oct(34) → bin: 11100
+
+
+List separed by spaces: 1010 11100 11100
+List separed by commas: 1010, 11100, 11100
 ==============================
 
 Choose an input base
@@ -97,8 +101,6 @@ q. quit
 base: q
 
 Bye :)
-
-
 ```
 
 Another example with error handling:
