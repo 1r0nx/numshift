@@ -106,13 +106,14 @@ Bye :)
 Another example with error handling:
 
 ```bash
+❯ ./numshift.py
 Choose an input base
 1. bin
 2. oct
 3. dec
 4. hex
 q. quit
-base: 1
+base: 3
 
 
 Choose an output base
@@ -121,17 +122,22 @@ Choose an output base
 3. dec
 4. hex
 q. quit
-base: 3
+base: 4
 
-Enter number(s) separated by spaces or commas: 1110 0234 1121 1000
+dec > hex
+Enter dec number(s) separated by spaces or commas: 12 4 45 FF AA 34
 
 ===== Conversion Results =====
-bin(1110) → dec: 14
-0234: is not a bin number
-1121: is not a bin number
-bin(1000) → dec: 8
-List separed by spaces: 14 8
-List separed by commas: 14, 8
+dec(12) → hex: C
+dec(4) → hex: 4
+dec(45) → hex: 2D
+FF: is not a dec number
+AA: is not a dec number
+dec(34) → hex: 22
+
+
+List separed by spaces: C 4 2D 22
+List separed by commas: C, 4, 2D, 22
 ==============================
 
 Choose an input base
