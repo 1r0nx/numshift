@@ -38,6 +38,7 @@ git clone https://github.com/yourusername/numshift.git
 cd numshift
 chmod +x build.sh
 ./build.sh
+sudo cp dist/numshift /usr/bin/
 ```
 The executable will be in dist/
 
