@@ -49,11 +49,12 @@ def main():
             print("\nYou chose the same base twice!\n")
             continue
 
-        raw = input("\nEnter number(s) separated by spaces or commas: ")
-        numbers = [x.strip() for x in raw.replace(",", " ").split() if x.strip()]
-
         in_name, in_base = BASES[in_choice]
         out_name, out_base = BASES[out_choice]
+
+        print(f"\n{in_name} > {out_name}")
+        raw = input(f"Enter {in_name} number(s) separated by spaces or commas: ")
+        numbers = [x.strip() for x in raw.replace(",", " ").split() if x.strip()]
 
         result_list = []
         print("\n===== Conversion Results =====")
