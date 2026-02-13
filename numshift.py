@@ -69,8 +69,8 @@ def main():
 
         print("\n")
         if result_list:
-            print(f"List separed by spaces: {" ".join(result_list)}")
-            print(f"List separed by commas: {", ".join(result_list)}")
+            print(f"List separed by spaces: {' '.join(result_list)}")
+            print(f"List separed by commas: {', '.join(result_list)}")
         print("==============================\n")
 
 
