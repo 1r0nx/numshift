@@ -15,9 +15,10 @@ useful for programmers, CTF players, and anyone working with low-level data.
   - Octal (base 8)
   - Decimal (base 10)
   - Hexadecimal (base 16)
-- Clear CLI interface
-- Numbers list separed by commas/spaces
-- Error handling for invalid inputs
+- Two modes: a scriptable command-line interface and an interactive menu
+- Numbers list separated by commas/spaces (from arguments or stdin)
+- Negative numbers keep their sign
+- Robust: invalid inputs are reported and skipped, never crash the tool
 - Works on Linux, macOS, and Windows (with Python installed)
 
 ---
@@ -32,12 +33,11 @@ pip3 install pyinstaller
 
 ## 🔧 Installation
 
-Clone the repository and create a binary:
+Clone the repository and build a standalone binary with PyInstaller:
 ```bash
 git clone https://github.com/yourusername/numshift.git
 cd numshift
-chmod +x build.sh
-./build.sh
+pyinstaller --onefile numshift.py
 sudo cp dist/numshift /usr/bin/
 ```
 The executable will be in dist/
@@ -48,6 +48,30 @@ git clone https://github.com/yourusername/numshift.git
 cd numshift
 chmod +x numshift.py
 ./numshift.py
+```
+
+---
+
+## 🖥️ Usage
+
+**Command-line mode** (scriptable, pipe-friendly) — give an input base, an
+output base, and the numbers. Bases accept a name (`bin`/`oct`/`dec`/`hex`) or a
+radix (`2`/`8`/`10`/`16`):
+
+```bash
+numshift -f hex -t dec FF AB          # -> 255 171
+numshift --from bin --to hex 1010 1111 # -> A F
+echo "FF,AB" | numshift -f hex -t dec  # reads numbers from stdin
+numshift -f dec -t bin -- -10          # negative numbers keep their sign: -1010
+```
+
+Invalid numbers are reported on stderr and skipped; the converted values are
+printed on stdout, space-separated, in input order.
+
+**Interactive mode** — run with no arguments for a menu-driven prompt:
+
+```bash
+numshift
 ```
 
 
@@ -88,8 +112,8 @@ oct(34) → bin: 11100
 oct(34) → bin: 11100
 
 
-List separed by spaces: 1010 11100 11100
-List separed by commas: 1010, 11100, 11100
+List separated by spaces: 1010 11100 11100
+List separated by commas: 1010, 11100, 11100
 ==============================
 
 Choose an input base
@@ -136,8 +160,8 @@ AA: is not a dec number
 dec(34) → hex: 22
 
 
-List separed by spaces: C 4 2D 22
-List separed by commas: C, 4, 2D, 22
+List separated by spaces: C 4 2D 22
+List separated by commas: C, 4, 2D, 22
 ==============================
 
 Choose an input base
