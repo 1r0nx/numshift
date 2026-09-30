@@ -15,7 +15,7 @@ useful for programmers, CTF players, and anyone working with low-level data.
   - Octal (base 8)
   - Decimal (base 10)
   - Hexadecimal (base 16)
-- Two modes: a scriptable command-line interface and an interactive menu
+- Two modes: a scriptable command-line interface and an interactive prompt
 - Numbers list separated by commas/spaces (from arguments or stdin)
 - Negative numbers keep their sign
 - Robust: invalid inputs are reported and skipped, never crash the tool
@@ -68,113 +68,41 @@ numshift -f dec -t bin -- -10          # negative numbers keep their sign: -1010
 Invalid numbers are reported on stderr and skipped; the converted values are
 printed on stdout, space-separated, in input order.
 
-**Interactive mode** — run with no arguments for a menu-driven prompt:
+**Interactive mode** — run with no arguments:
 
 ```bash
 numshift
 ```
 
+You pick an input and output base **once** (by name `bin/oct/dec/hex` or radix
+`2/8/10/16`), then keep entering numbers. Type `b` to change bases, `q` to quit.
+Pick `all` as the output base to convert to every base at once.
 
-## ⚙️ Example
-
-```bash
-numshift
-```
-
-Output:
-
-```bash
+```text
 ❯ numshift
-Choose an input base
-1. bin
-2. oct
-3. dec
-4. hex
-q. quit
-base: 2
 
+  numshift — base converter (bin/oct/dec/hex)
 
-Choose an output base
-1. bin
-2. oct
-3. dec
-4. hex
-q. quit
-base: 1
+Input base  [bin/2  oct/8  dec/10  hex/16 | q quit] > hex
+Output base [bin/2  oct/8  dec/10  hex/16  all | q quit] > dec
 
-oct > bin
-Enter oct number(s) separated by spaces or commas: 12 34 09 34
+hex → dec   (numbers to convert; 'b' to change bases, 'q' to quit)
+> FF AB
+  hex(FF) → dec: 255
+  hex(AB) → dec: 171
+  spaces: 255 171   commas: 255, 171
+> b
+Input base  [bin/2  oct/8  dec/10  hex/16 | q quit] > dec
+Output base [bin/2  oct/8  dec/10  hex/16  all | q quit] > all
 
-===== Conversion Results =====
-oct(12) → bin: 1010
-oct(34) → bin: 11100
-09: is not a oct number
-oct(34) → bin: 11100
-
-
-List separated by spaces: 1010 11100 11100
-List separated by commas: 1010, 11100, 11100
-==============================
-
-Choose an input base
-1. bin
-2. oct
-3. dec
-4. hex
-q. quit
-base: q
+dec → all   (numbers to convert; 'b' to change bases, 'q' to quit)
+> 255
+  dec(255) = bin 11111111 | oct 377 | dec 255 | hex FF
+> q
 
 Bye :)
 ```
 
-Another example with error handling:
-
-```bash
-❯ ./numshift.py
-Choose an input base
-1. bin
-2. oct
-3. dec
-4. hex
-q. quit
-base: 3
-
-
-Choose an output base
-1. bin
-2. oct
-3. dec
-4. hex
-q. quit
-base: 4
-
-dec > hex
-Enter dec number(s) separated by spaces or commas: 12 4 45 FF AA 34
-
-===== Conversion Results =====
-dec(12) → hex: C
-dec(4) → hex: 4
-dec(45) → hex: 2D
-FF: is not a dec number
-AA: is not a dec number
-dec(34) → hex: 22
-
-
-List separated by spaces: C 4 2D 22
-List separated by commas: C, 4, 2D, 22
-==============================
-
-Choose an input base
-1. bin
-2. oct
-3. dec
-4. hex
-q. quit
-base: q
-
-Bye :)
-
-```
 
 ## 📜 License
 

@@ -3,15 +3,16 @@
 import argparse
 import sys
 
-# Interactive menu choice -> (canonical name, radix)
-MENU = {
-    "1": ("bin", 2),
-    "2": ("oct", 8),
-    "3": ("dec", 10),
-    "4": ("hex", 16),
-}
 NAME_TO_RADIX = {"bin": 2, "oct": 8, "dec": 10, "hex": 16}
 RADIX_TO_NAME = {2: "bin", 8: "oct", 10: "dec", 16: "hex"}
+
+# ─── colours (disabled when output is not a terminal) ───────────────────────--
+_RESET, _BOLD, _DIM = "\033[0m", "\033[1m", "\033[2m"
+_GREEN, _RED, _CYAN, _YELLOW = "\033[92m", "\033[91m", "\033[96m", "\033[93m"
+USE_COLOR = sys.stdout.isatty()
+
+def c(text, *codes):
+    return ("".join(codes) + str(text) + _RESET) if (USE_COLOR and codes) else str(text)
 
 
 def convert(value: str, from_base: int, to_base: int):
@@ -77,63 +78,90 @@ def run_cli(parser, args):
 
 # ─── interactive mode ─────────────────────────────────────────────────────────
 
-def ask_base(prompt):
-    """Prompt for a base from the menu. Returns a MENU key, or None to quit."""
+def ask_base(label, allow_all=False):
+    """Compact one-line base prompt. Accepts a name (bin/oct/dec/hex) or a radix
+    (2/8/10/16); 'q' quits; 'all' when allowed. Returns (radix, name), the string
+    "all", or None to quit. (No 1-4 keys: '2' would be ambiguous with radix 2.)"""
+    opts = "bin/2  oct/8  dec/10  hex/16" + ("  all" if allow_all else "")
+    prompt = c(f"{label.ljust(11)} ", _BOLD) + c(f"[{opts} | q quit] ", _DIM) + "> "
     while True:
-        print(prompt)
-        print("1. bin\n2. oct\n3. dec\n4. hex\nq. quit")
         try:
-            choice = input("base: ").strip().lower()
+            choice = input(prompt).strip().lower()
         except EOFError:
             return None
         if choice in ("q", "quit"):
             return None
-        if choice in MENU:
-            return choice
-        print("\nWrong base!\n")
+        if allow_all and choice == "all":
+            return "all"
+        radix, name = resolve_base(choice)     # name or radix
+        if radix is not None:
+            return radix, name
+        print(c("  invalid base — use a name (hex) or a radix (16)", _RED))
+
+
+def _print_conversion(num, in_base, in_name, out_choice):
+    """Print one number converted, coloured. out_choice is (radix, name) or 'all'."""
+    if out_choice == "all":
+        vals = []
+        for radix in (2, 8, 10, 16):
+            res = convert(num, in_base, radix)
+            if res is None:
+                print("  " + c(f"{num}: is not a {in_name} number", _RED))
+                return None
+            vals.append(f"{RADIX_TO_NAME[radix]} {res}")
+        print("  " + c(f"{in_name}({num})", _CYAN) + " = " + c(" | ".join(vals), _GREEN))
+        return None
+
+    out_base, out_name = out_choice
+    res = convert(num, in_base, out_base)
+    if res is None:
+        print("  " + c(f"{num}: is not a {in_name} number", _RED))
+        return None
+    print("  " + c(f"{in_name}({num}) → {out_name}: ", _DIM) + c(res, _GREEN))
+    return res
 
 
 def interactive():
+    print(c("\n  numshift — base converter (bin/oct/dec/hex)\n", _BOLD, _CYAN))
+    need_bases = True
+    in_base = in_name = out_choice = None
+
     while True:
-        in_choice = ask_base("Choose an input base")
-        if in_choice is None:
-            break
-        print()
-        out_choice = ask_base("Choose an output base")
-        if out_choice is None:
-            break
+        if need_bases:
+            r = ask_base("Input base")
+            if r is None:
+                break
+            in_base, in_name = r
+            r = ask_base("Output base", allow_all=True)
+            if r is None:
+                break
+            out_choice = r
+            out_label = "all" if out_choice == "all" else out_choice[1]
+            print(c(f"\n{in_name} → {out_label}", _YELLOW) +
+                  c("   (numbers to convert; 'b' to change bases, 'q' to quit)", _DIM))
+            need_bases = False
 
-        if in_choice == out_choice:
-            print("\nYou chose the same base twice!\n")
-            continue
-
-        in_name, in_base = MENU[in_choice]
-        out_name, out_base = MENU[out_choice]
-
-        print(f"\n{in_name} > {out_name}")
         try:
-            raw = input(f"Enter {in_name} number(s) separated by spaces or commas: ")
+            raw = input(c("> ", _BOLD))
         except EOFError:
             break
+        cmd = raw.strip().lower()
+        if cmd in ("q", "quit"):
+            break
+        if cmd == "b":
+            need_bases = True
+            continue
 
         numbers = split_numbers(raw)
-        result_list = []
-        print("\n===== Conversion Results =====")
-        for num in numbers:
-            result = convert(num, in_base, out_base)
-            if result is None:
-                print(f"{num}: is not a {in_name} number")
-            else:
-                print(f"{in_name}({num}) → {out_name}: {result}")
-                result_list.append(result)
+        if not numbers:
+            continue
 
-        print()
-        if result_list:
-            print(f"List separated by spaces: {' '.join(result_list)}")
-            print(f"List separated by commas: {', '.join(result_list)}")
-        print("==============================\n")
+        results = [r for r in (_print_conversion(n, in_base, in_name, out_choice)
+                               for n in numbers) if r is not None]
+        if out_choice != "all" and results:
+            print(c(f"  spaces: {' '.join(results)}   commas: {', '.join(results)}", _DIM))
 
-    print("\nBye :)")
+    print(c("\nBye :)\n", _CYAN))
 
 
 def main():
